@@ -9,6 +9,7 @@ var Hints = null;
 
     var next_CBV_hint_ = 0;  // -1 means hints are off
     var options_       = new Map();
+    var MAX_HINT_NUMBERS = 1000
 
 
     //
@@ -34,6 +35,48 @@ var Hints = null;
 	$("[CBV_hint_number]").removeAttr("CBV_hint_number");
 
 	next_CBV_hint_ = -1;
+    }
+
+    hint_number_to_text_map = 0
+    text_to_hint_number_map = 0
+    
+    function build_hint_number_maps() {
+		hint_number_to_text_map = {}
+		text_to_hint_number_map = {}
+
+		for (var hint_number = 0; hint_number < MAX_HINT_NUMBERS; hint_number++)
+		{
+			number1 = Math.floor(hint_number / 26)
+			number2 = hint_number % 26
+			char_code_start = "A".charCodeAt(0)
+			if (number1 > 0)
+				text = String.fromCharCode(char_code_start + number1, char_code_start + number2)
+			else
+				text = String.fromCharCode(char_code_start + number2)
+
+			hint_number_to_text_map[hint_number] = text
+			text_to_hint_number_map[text] = hint_number
+		}
+    }
+    
+    function map_hint_number_to_text(hint_number) {
+		if (Hints.option("A"))
+		{
+			if (!hint_number_to_text_map) build_hint_number_maps()
+			return hint_number_to_text_map[hint_number]
+		}
+		else
+			return hint_number
+    }
+
+    function map_text_to_hint_number(text) {
+		if (Hints.option("A"))
+		{
+			if (!text_to_hint_number_map) build_hint_number_maps()
+			return text_to_hint_number_map[text.toUpperCase()]
+		}
+		else
+			return text
     }
 
 
@@ -174,5 +217,7 @@ var Hints = null;
 	option		   : option,
 	option_value 	   : option_value,
 	with_high_contrast : with_high_contrast,
+	map_hint_number_to_text : map_hint_number_to_text,
+	map_text_to_hint_number : map_text_to_hint_number,
     };
 })();

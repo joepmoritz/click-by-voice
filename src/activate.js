@@ -333,7 +333,7 @@ var Activate = null;
 	    }
 	    element = element.first();
 	} else
-	    element = $("[CBV_hint_number='" + hint + "']");
+	    element = $("[CBV_hint_number='" + Hints.map_text_to_hint_number(hint) + "']");
 	if (element.length == 0) {
 	    console.log("goto_hint: unable to find hint: " + hint);
 	    return;

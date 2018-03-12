@@ -78,6 +78,7 @@ var AddHint = null;
     function build_hint(element, hint_number, use_overlay) {
 	var outer = build_base_element();
 	outer.attr("CBV_hint_tag", hint_number);
+	hint_text = Hints.map_hint_number_to_text(hint_number)
 
 	if (use_overlay) {
 	    outer.attr("CBV_outer_overlay", "true");
@@ -86,7 +87,7 @@ var AddHint = null;
 	    outer.append(inner);
 
 	    inner.attr("CBV_inner_overlay", "true");
-	    add_text(inner, hint_number);
+	    add_text(inner, hint_text);
 
 	    // IMPORTANT: need to have top, left set so offset(-[,-])
 	    //            works correctly on this element:
@@ -102,7 +103,7 @@ var AddHint = null;
 
 	} else {
 	    outer.attr("CBV_outer_inline", "true");
-	    add_text(outer, hint_number);
+	    add_text(outer, hint_text);
 	}
 
 	return outer;
