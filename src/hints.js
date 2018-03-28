@@ -9,7 +9,6 @@ var Hints = null;
 
     var next_CBV_hint_ = 0;  // -1 means hints are off
     var options_       = new Map();
-    var MAX_HINT_NUMBERS = 1000
 
 
     //
@@ -37,8 +36,10 @@ var Hints = null;
 	next_CBV_hint_ = -1;
     }
 
-    hint_number_to_text_map = 0
-    text_to_hint_number_map = 0
+    var hint_first_letters = ['L', 'B', 'M', 'P', 'R', 'T', 'S', 'G', 'Y', 'F', 'SL', 'FL', 'PL', 'KR']
+    var MAX_HINT_NUMBERS = hint_first_letters.length * 26
+    var hint_number_to_text_map = 0
+    var text_to_hint_number_map = 0
     
     function build_hint_number_maps() {
 		hint_number_to_text_map = {}
@@ -49,10 +50,7 @@ var Hints = null;
 			number1 = Math.floor(hint_number / 26)
 			number2 = hint_number % 26
 			char_code_start = "A".charCodeAt(0)
-			if (number1 > 0)
-				text = String.fromCharCode(char_code_start + number1, char_code_start + number2)
-			else
-				text = String.fromCharCode(char_code_start + number2)
+			text = hint_first_letters[number1].toUpperCase() + String.fromCharCode(char_code_start + number2)
 
 			hint_number_to_text_map[hint_number] = text
 			text_to_hint_number_map[text] = hint_number
