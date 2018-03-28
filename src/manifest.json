@@ -62,6 +62,12 @@
     "content_scripts": [
         {
             "matches": ["http://*/*", "https://*/*", "file://*/*"],
+            "exclude_matches": ["*://inbox.google.com/*",
+                "*://mail.google.com/*",
+                "*://calendar.google.com/*",
+                "*://docs.google.com/*",
+                "*://outlook.office.com/*",
+                "*://keep.google.com/*"],
             "css": ["show_hints.css"],
             "js": ["jquery-3.0.0.min.js", "utilities.js", 
 		   "Dom_walk.js",
