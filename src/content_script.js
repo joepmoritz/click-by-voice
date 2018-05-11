@@ -28,12 +28,14 @@ chrome.runtime.onMessage.addListener(
 
 
 $(document).ready(function() {
-    request("get_initial_operation", {}, function(response) {
-	perform_operation(response.initial_operation, "");
-    });
-
+    Hints.refresh_hints();
 
     //setTimeout(function() { add_hints(); }, 5000);
     // This runs even when our tab is in the background:
     setInterval(Hints.refresh_hints, 3000);
+});
+
+
+request("get_initial_operation", {}, function(response) {
+    perform_operation(response.initial_operation, "");
 });

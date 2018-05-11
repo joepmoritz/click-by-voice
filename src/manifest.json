@@ -61,6 +61,7 @@
 
     "content_scripts": [
         {
+            "run_at": "document_start",
             "matches": ["http://*/*", "https://*/*", "file://*/*"],
             "exclude_matches": ["*://inbox.google.com/*",
                 "*://mail.google.com/*",
