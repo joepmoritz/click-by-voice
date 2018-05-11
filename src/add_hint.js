@@ -195,6 +195,7 @@ var AddHint = null;
 	var hint_tag    = build_hint(element, hint_number, true);
 	var inner	    = hint_tag.children().first();
 	var show_at_end = !Hints.option("s");
+	element.hint_tag = hint_tag;
 
 	// hard coding reddit entire story link: <<<>>>
 	if (/\.reddit\.com/.test(window.location.href)) {
@@ -372,9 +373,8 @@ var AddHint = null;
 		    return false;
 	    }
 
-	    //var hint_tag = build_hint(element, hint_number, false);
-	    var hint_tag = build_hint(current, hint_number, false);
-	    insert_element(current, hint_tag, put_before, true);
+	    element.hint_tag = build_hint(current, hint_number, false);
+	    insert_element(current, element.hint_tag, put_before, true);
 	    return true;
 	}
     }
@@ -382,8 +382,8 @@ var AddHint = null;
 
     // this is often unsafe; prefer add_inline_hint_inside
     function add_inline_hint_outside(element, hint_number) {
-	var hint_tag = build_hint(element, hint_number, false);
-	insert_element(element, hint_tag, false, false);
+	element.hint_tag = build_hint(element, hint_number, false);
+	insert_element(element, element.hint_tag, false, false);
     }
 
 
@@ -393,6 +393,7 @@ var AddHint = null;
 	    if (element.is("a") || element.is("button")) {
 		var hint_tag = build_hint(element, hint_number, false);
 		insert_element(element, hint_tag, false, true);
+		element.hint_tag = hint_tag;
 		return null;
 	    }
 	    add_inline_hint_outside(element, hint_number);
