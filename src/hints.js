@@ -7,8 +7,35 @@ var Hints = null;
 
 (function() {
 
-    var next_CBV_hint_ = 0;  // -1 means hints are off
+    var hints_enabled = true;
+    var hint_first_letters = ['L', 'B', 'M', 'R', 'T', 'S', 'G', 'Y', 'F', 'J', 'SL', 'FL', 'BL', 'GL', 'BR', 'ST', 'TR', 'KR'];
+    var MAX_HINT_NUMBERS = 18 * 26;
+    var hint_number_to_text_map = 0;
+    var text_to_hint_number_map = 0;
+
+    var available_hint_numbers = new Set();
     var options_       = new Map();
+
+    function reset_available_hint_numbers() {
+	    for (var i = 0; i < MAX_HINT_NUMBERS; ++i)
+	    {
+			available_hint_numbers.add(i);
+	    }
+    }
+
+    function pop_available_hint_number() {
+		for (var i = 0; i < MAX_HINT_NUMBERS; ++i)
+		{
+			if (available_hint_numbers.has(i))
+			{
+				available_hint_numbers.delete(i);
+				return i;
+			}
+		}
+    }
+
+    reset_available_hint_numbers();
+
 
 
     //
@@ -21,26 +48,28 @@ var Hints = null;
     }
 
     function refresh_hints() {
-	if (document.hidden) {
-	    console.log("skipping refresh...");
-	    return;
-	}
-	if (next_CBV_hint_ >= 0)
-	    place_hints();
+       if (document.hidden) {
+            console.log("skipping refresh...");
+            return;
+       }
+
+       if (hints_enabled) place_hints();
     }
 
     function remove_hints() {
 	$("[CBV_hint_element]").remove();
 	$("[CBV_hint_number]").removeAttr("CBV_hint_number");
 
-	next_CBV_hint_ = -1;
+       hints_enabled = false;
+       reset_available_hint_numbers();
     }
 
-    var hint_first_letters = ['L', 'B', 'M', 'P', 'R', 'T', 'S', 'G', 'Y', 'F', 'SL', 'FL', 'PL', 'KR']
-    var MAX_HINT_NUMBERS = hint_first_letters.length * 26
-    var hint_number_to_text_map = 0
-    var text_to_hint_number_map = 0
-    
+    function remove_hint(element) {
+		hint_number = parseInt(element.getAttribute("CBV_hint_number"));
+		available_hint_numbers.add(hint_number);
+		element.removeAttribute("CBV_hint_number");
+    }
+
     function build_hint_number_maps() {
 		hint_number_to_text_map = {}
 		text_to_hint_number_map = {}
@@ -172,37 +201,35 @@ var Hints = null;
     //
 
     function place_hints() {
-	console.log("adding hints: " + options_to_string());
+		// console.log("adding hints: " + options_to_string());
 
-	if (next_CBV_hint_ < 0)
-	    next_CBV_hint_ = 0;
+		hints_enabled = true;
+		var start = performance.now();
+		// FindHint.each_hintable(function(element) {});
+		// console.log("  just FindHint.each_hintable time:   " + (performance.now()-start) + " ms");
+		// start = performance.now();
+		
 
+		var delayed_work = [];
+		FindHint.each_hintable(function(element) {
+		    if (element.is("[CBV_hint_number]")) return;
+		    if (available_hint_numbers.size == 0) return;
+		    hint_number = pop_available_hint_number();
+		    element.attr("CBV_hint_number", hint_number);
 
-	var start = performance.now();
-	// FindHint.each_hintable(function(element) {});
-	// console.log("  just FindHint.each_hintable time:   " + (performance.now()-start) + " ms");
-	// start = performance.now();
-	
+		    var delayed = AddHint.add_hint(element, hint_number);
+		    if (delayed)
+			delayed_work.push(delayed);
 
-	var delayed_work = [];
-	FindHint.each_hintable(function(element) {
-	    if (element.is("[CBV_hint_number]"))
-		return;
-	    element.attr("CBV_hint_number", next_CBV_hint_);
+			available_hint_numbers.delete(hint_number)
+		});
 
-	    var delayed = AddHint.add_hint(element, next_CBV_hint_);
-	    if (delayed)
-		delayed_work.push(delayed);
-
-	    next_CBV_hint_ += 1;
-	});
-
-	delayed_work.map(function (o) { o(); });
+		delayed_work.map(function (o) { o(); });
 
 
-	// console.log("total hints assigned: " + next_CBV_hint_ 
-	// 		+ "    (" + delayed_work.length + " overlays added)");
-	// console.log("  " + (performance.now()-start) + " ms");
+		// console.log("total hints assigned: " + next_CBV_hint_ 
+		// 		+ "    (" + delayed_work.length + " overlays added)");
+		// console.log("  " + (performance.now()-start) + " ms");
     }
 
 
@@ -211,6 +238,7 @@ var Hints = null;
 	add_hints	   : add_hints,
 	refresh_hints	   : refresh_hints,
 	remove_hints	   : remove_hints,
+	remove_hint	   : remove_hint,
 
 	option		   : option,
 	option_value 	   : option_value,

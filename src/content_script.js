@@ -39,3 +39,26 @@ $(document).ready(function() {
 request("get_initial_operation", {}, function(response) {
     perform_operation(response.initial_operation, "");
 });
+
+var refresh_timer = false;
+
+function refresh_hints() {
+    refresh_timer = false;
+    Hints.refresh_hints();
+}
+
+var observer = new MutationObserver(function(mutations) {
+    if (!refresh_timer)
+    {
+        refresh_timer = setTimeout(refresh_hints, 100);
+    }
+
+    mutations.forEach(function(mutation) {
+        mutation.removedNodes.forEach((node) => {
+            $(node).find("[CBV_hint_number]").each((index, element) => {
+                Hints.remove_hint(element);
+            });
+        });
+    })
+});
+observer.observe(document, { childList: true, subtree: true });
