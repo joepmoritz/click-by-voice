@@ -214,6 +214,7 @@ var Hints = null;
 		FindHint.each_hintable(function(element) {
 		    if (element.is("[CBV_hint_number]")) return;
 		    if (available_hint_numbers.size == 0) return;
+		    if (!element.visible(true)) return;
 		    hint_number = pop_available_hint_number();
 		    element.attr("CBV_hint_number", hint_number);
 

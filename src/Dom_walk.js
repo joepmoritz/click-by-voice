@@ -8,6 +8,8 @@ var DomWalk = null;
 (function() {
 
     function each_displaying_helper(element, pre_callback, post_callback, exclusion) {
+
+
 	if (CBV_inserted_element(element))
     	    return;
 

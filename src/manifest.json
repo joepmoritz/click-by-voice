@@ -72,13 +72,16 @@
                 "*://jobs.apple.com/*",
                 "*://www.linkedin.com/*"],
             "css": ["show_hints.css"],
-            "js": ["jquery-3.0.0.min.js", "utilities.js", 
-		   "Dom_walk.js",
-		   "activate.js",
-		   "add_hint.js",
-		   "find_hint.js", 
-		   "hints.js", 
-		   "content_script.js"]
+            "js": [
+                "jquery-3.0.0.min.js",
+                "jquery.visible.js",
+                "utilities.js", 
+                "Dom_walk.js",
+                "activate.js",
+                "add_hint.js",
+                "find_hint.js", 
+                "hints.js", 
+                "content_script.js"]
         }
     ],
 

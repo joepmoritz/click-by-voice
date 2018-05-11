@@ -62,3 +62,9 @@ var observer = new MutationObserver(function(mutations) {
     })
 });
 observer.observe(document, { childList: true, subtree: true });
+
+
+window.addEventListener('scroll', () => {
+    if (!refresh_timer)
+        refresh_timer = setTimeout(refresh_hints, 100);
+});
