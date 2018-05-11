@@ -185,6 +185,13 @@ var AddHint = null;
 
 
     function add_overlay_hint(element, hint_number) {
+    if (window.location.href.includes('github.com')) {
+    	if (element.hasClass('js-line-number')) {
+    		return;
+    	}
+    }
+
+
 	var hint_tag    = build_hint(element, hint_number, true);
 	var inner	    = hint_tag.children().first();
 	var show_at_end = !Hints.option("s");

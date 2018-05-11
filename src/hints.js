@@ -201,7 +201,7 @@ var Hints = null;
     //
 
     function place_hints() {
-		// console.log("adding hints: " + options_to_string());
+		console.log("adding hints: " + options_to_string());
 
 		hints_enabled = true;
 		var start = performance.now();
