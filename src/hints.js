@@ -199,6 +199,22 @@ var Hints = null;
     //
     // 
     //
+    var delayed_work = [];
+
+    function add_hint(element, callback) {
+    	if (element.is("[CBV_hint_number]")) return;
+    	if (available_hint_numbers.size == 0) return;
+    	if (!element.visible(true)) return;
+    	hint_number = pop_available_hint_number();
+    	// console.log(hint_number);
+    	element.attr("CBV_hint_number", hint_number);
+
+    	var delayed = callback(element, hint_number);
+    	if (delayed)
+    	delayed_work.push(delayed);
+
+    	available_hint_numbers.delete(hint_number);
+    }
 
     function place_hints() {
 		console.log("adding hints: " + options_to_string());
@@ -209,24 +225,20 @@ var Hints = null;
 		// console.log("  just FindHint.each_hintable time:   " + (performance.now()-start) + " ms");
 		// start = performance.now();
 
-		if (GoogleInbox.is_applicable()) root_elements = GoogleInbox.get_root_elements();
-		else root_elements = $("html").children().filter(":not(head)");
+		delayed_work = [];
+
+		if (GoogleInbox.is_applicable())
+		{
+			root_elements = GoogleInbox.get_root_elements();
+			GoogleInbox.place_hints();
+		}
+		else
+		{
+			root_elements = $("html").children().filter(":not(head)");
+		}
 		
 
-		var delayed_work = [];
-		FindHint.each_hintable(root_elements, function(element) {
-		    if (element.is("[CBV_hint_number]")) return;
-		    if (available_hint_numbers.size == 0) return;
-		    if (!element.visible(true)) return;
-		    hint_number = pop_available_hint_number();
-		    element.attr("CBV_hint_number", hint_number);
-
-		    var delayed = AddHint.add_hint(element, hint_number);
-		    if (delayed)
-			delayed_work.push(delayed);
-
-			available_hint_numbers.delete(hint_number)
-		});
+		FindHint.each_hintable(root_elements, (e) => add_hint(e, AddHint.add_hint));
 
 		delayed_work.map(function (o) { o(); });
 
@@ -239,6 +251,7 @@ var Hints = null;
 
 
     Hints = {
+	add_hint: add_hint,
 	add_hints	   : add_hints,
 	refresh_hints	   : refresh_hints,
 	remove_hints	   : remove_hints,

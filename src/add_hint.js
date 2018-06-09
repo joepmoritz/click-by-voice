@@ -184,7 +184,7 @@ var AddHint = null;
     }
 
 
-    function add_overlay_hint(element, hint_number) {
+    function add_overlay_hint(element, hint_number, show_at_end = "s") {
     if (window.location.href.includes('github.com')) {
     	if (element.hasClass('js-line-number')) {
     		return;
@@ -194,7 +194,7 @@ var AddHint = null;
 
 	var hint_tag    = build_hint(element, hint_number, true);
 	var inner	    = hint_tag.children().first();
-	var show_at_end = !Hints.option("s");
+	if (show_at_end == "s") show_at_end = !Hints.option("s");
 	element.hint_tag = hint_tag;
 
 	// hard coding reddit entire story link: <<<>>>
@@ -431,5 +431,8 @@ var AddHint = null;
     }
 
 
-    AddHint = {add_hint: add_hint};
+    AddHint = {
+    	add_hint: add_hint,
+    	add_overlay_hint: add_overlay_hint,
+    };
 })();
