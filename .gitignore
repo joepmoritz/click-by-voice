@@ -1,2 +1,4 @@
 src.tmp
 click_by_voice.zip
+*.sublime-project
+*.sublime-workspace
