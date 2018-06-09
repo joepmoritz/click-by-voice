@@ -63,7 +63,7 @@
         {
             "run_at": "document_start",
             "matches": ["http://*/*", "https://*/*", "file://*/*"],
-            "exclude_matches": ["*://inbox.google.com/*",
+            "exclude_matches": [
                 "*://mail.google.com/*",
                 "*://calendar.google.com/*",
                 "*://docs.google.com/*",
@@ -76,6 +76,7 @@
                 "jquery-3.0.0.min.js",
                 "jquery.visible.js",
                 "utilities.js", 
+                "GoogleInbox.js",
                 "Dom_walk.js",
                 "activate.js",
                 "add_hint.js",

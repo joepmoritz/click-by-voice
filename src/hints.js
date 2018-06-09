@@ -209,7 +209,8 @@ var Hints = null;
 		// console.log("  just FindHint.each_hintable time:   " + (performance.now()-start) + " ms");
 		// start = performance.now();
 
-		root_elements = $("html").children().filter(":not(head)");
+		if (GoogleInbox.is_applicable()) root_elements = GoogleInbox.get_root_elements();
+		else root_elements = $("html").children().filter(":not(head)");
 		
 
 		var delayed_work = [];
