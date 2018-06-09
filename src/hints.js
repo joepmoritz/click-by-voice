@@ -208,10 +208,12 @@ var Hints = null;
 		// FindHint.each_hintable(function(element) {});
 		// console.log("  just FindHint.each_hintable time:   " + (performance.now()-start) + " ms");
 		// start = performance.now();
+
+		root_elements = $("html").children().filter(":not(head)");
 		
 
 		var delayed_work = [];
-		FindHint.each_hintable(function(element) {
+		FindHint.each_hintable(root_elements, function(element) {
 		    if (element.is("[CBV_hint_number]")) return;
 		    if (available_hint_numbers.size == 0) return;
 		    if (!element.visible(true)) return;

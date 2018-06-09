@@ -132,8 +132,9 @@ var FindHint = null;
 
 
     // Enumerate each element that we should hint:
-    function each_hintable(callback) {
+    function each_hintable(root_elements, callback) {
 	DomWalk.each_displaying(
+		root_elements,
 	    // pre-order traversal:
 	    function (element) {
 		if (hintable(element))
