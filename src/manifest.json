@@ -69,8 +69,7 @@
                 "*://docs.google.com/*",
                 "*://outlook.office.com/*",
                 "*://keep.google.com/*",
-                "*://jobs.apple.com/*",
-                "*://www.linkedin.com/*"],
+                "*://jobs.apple.com/*"],
             "css": ["show_hints.css"],
             "js": [
                 "jquery-3.0.0.min.js",
