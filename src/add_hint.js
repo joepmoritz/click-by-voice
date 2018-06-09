@@ -341,6 +341,9 @@ var AddHint = null;
 
     // returns false iff unable to safely add hint
     function add_inline_hint_inside(element, hint_number) {
+    if (!/\S+/.test(element.text())) 
+    	return false;
+    
 	var current = element;
 	for (;;) {
 	    if (!can_put_span_inside(current))
