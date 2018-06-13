@@ -32,7 +32,7 @@ $(document).ready(function() {
 
     //setTimeout(function() { add_hints(); }, 5000);
     // This runs even when our tab is in the background:
-    setInterval(Hints.refresh_hints, 3000);
+    // setInterval(Hints.refresh_hints, 3000);
 });
 
 
@@ -54,17 +54,53 @@ var observer = new MutationObserver(function(mutations) {
     }
 
     mutations.forEach(function(mutation) {
+        if (mutation.type == 'attributes') {
+            if (!mutation.target.hasAttribute('cbv_hint_number')) {
+                // console.log('The ' + mutation.attributeName + ' attribute was deleted.');
+                Hints.remove_hint(mutation.target, mutation.oldValue);
+            }
+        }
+
         mutation.removedNodes.forEach((node) => {
-            $(node).find("[CBV_hint_number]").each((index, element) => {
+            // console.log('Node removed ');
+            // console.log(node);
+
+            if (node.hasAttribute && node.hasAttribute('cbv_hint_number')) {
+                // console.log('Node has attribute');
+                Hints.remove_hint(node);
+            }
+
+            $(node).find('[cbv_hint_number]').each((index, element) => {
                 Hints.remove_hint(element);
+            });
+
+            function remove_hint_tag(tag_element) {
+                hint_number = tag_element.getAttribute("CBV_hint_tag");
+                elements = $("[cbv_hint_number='" + hint_number + "']");
+                elements.each((index, element) => Hints.remove_hint(element, hint_number));
+            }
+
+            if (node.hasAttribute && node.hasAttribute('CBV_hint_tag')) {
+                // console.log('Node has attribute CBV_hint_tag');
+                remove_hint_tag(node);
+            }
+
+            $(node).find("[CBV_hint_tag]").each((index, tag_element) => {
+                remove_hint_tag(tag_element);
             });
         });
     })
 });
-observer.observe(document, { childList: true, subtree: true });
+observer.observe(document, { childList: true, subtree: true, attributes: true, attributeFilter: ['cbv_hint_number'], attributeOldValue: true});
 
 
 window.addEventListener('scroll', () => {
     if (!refresh_timer)
         refresh_timer = setTimeout(refresh_hints, 100);
 });
+
+window.addEventListener('focus', () => {
+    if (!refresh_timer)
+        refresh_timer = setTimeout(refresh_hints, 100);
+});
+

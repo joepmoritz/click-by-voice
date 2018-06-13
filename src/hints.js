@@ -64,10 +64,14 @@ var Hints = null;
        reset_available_hint_numbers();
     }
 
-    function remove_hint(element) {
-		hint_number = parseInt(element.getAttribute("CBV_hint_number"));
+    function remove_hint(element, hint_number = -1) {
+		if (hint_number < 0) hint_number = parseInt(element.getAttribute("CBV_hint_number"));
+		hint_number = parseInt(hint_number);
+		// console.log('remove_hint ' + hint_number);
+		// console.log(element);
 		available_hint_numbers.add(hint_number);
 		element.removeAttribute("CBV_hint_number");
+		$("[CBV_hint_tag='" + hint_number + "']").remove();
     }
 
     function build_hint_number_maps() {
