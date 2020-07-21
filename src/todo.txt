@@ -1,0 +1,5 @@
+- perform delayed work later (move overlays into place)
+- overlays after body when parent element has border–radius
+- Add support for select boxes
+- Add support for clicking numbers (for date boxes)
+- Do not hint checkbox/radio when label for it exists

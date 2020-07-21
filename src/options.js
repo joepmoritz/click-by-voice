@@ -15,9 +15,9 @@ function save_options() {
 
 // Restores command using the preferences stored in chrome.storage.
 function restore_options() {
-  // Use default value command = ':+'.
+  // Use default value command = ':+a'.
   chrome.storage.sync.get({
-    startingCommand: ':+'
+    startingCommand: ':+a'
   }, function(items) {
     document.getElementById('command').value = items.startingCommand;
   });

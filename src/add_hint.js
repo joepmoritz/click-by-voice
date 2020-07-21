@@ -126,6 +126,9 @@ var AddHint = null;
 	if (element.is("select, option, textarea")) 
 	    return false;
 
+    if (element.attr("role") == "textbox")
+    	return false;
+
 	if (element.is("iframe")) 
 	    // iframe contents are displayed only if browser doesn't support iframe's
 	    return false;
@@ -185,13 +188,6 @@ var AddHint = null;
 
 
     function add_overlay_hint(element, hint_number, show_at_end = "s") {
-    if (window.location.href.includes('github.com')) {
-    	if (element.hasClass('js-line-number')) {
-    		return;
-    	}
-    }
-
-
 	var hint_tag    = build_hint(element, hint_number, true);
 	var inner	    = hint_tag.children().first();
 	if (show_at_end == "s") show_at_end = !Hints.option("s");
@@ -208,12 +204,12 @@ var AddHint = null;
 
 	if (Hints.option("f")) {
 	    $("body").after(hint_tag);
-	} else if (element.is("table, tr, td, th, colgroup, tbody, thead, tfoot")) {
-	    // temporary kludge for Gmail: <<<>>>
-	    var current = element;
-	    while (current.is("table, tr, td, th, colgroup, tbody, thead, tfoot"))
-		current = current.parent();
-	    insert_element(current, hint_tag, true, false);
+	// } else if (element.is("table, tr, td, th, colgroup, tbody, thead, tfoot")) {
+	//     // temporary kludge for Gmail: <<<>>>
+	//     var current = element;
+	//     while (current.is("table, tr, td, th, colgroup, tbody, thead, tfoot"))
+	// 	current = current.parent();
+	//     insert_element(current, hint_tag, true, false);
 
 	} else {
 	    //
@@ -234,13 +230,20 @@ var AddHint = null;
 	return () => {
 	    try { 
 		// this fails for XML files...
-		var target_offset = element.offset();
+		var element_offset = element.offset();
+		var target_offset = element_offset;
 		if (show_at_end) {
 		    target_offset.left += element.outerWidth() 
     		        -   inner.outerWidth();
 		}
 		target_offset.top  -= displacement.up;
 		target_offset.left += displacement.right;
+
+		// console.log(target_offset.left);
+		// console.log(element_offset.left + element.outerWidth() * 0.7);
+		// if (show_at_end) target_offset.left = Math.max(target_offset.left, element_offset.left + element.outerWidth() * 0.7);
+		// else target_offset.left = Math.min(target_offset.left, element_offset.left + element.outerWidth() * (1 - 0.7) - inner.outerWidth());
+
 		inner.offset(target_offset);
 	    } catch (e) {}
 	};
@@ -341,7 +344,7 @@ var AddHint = null;
 
     // returns false iff unable to safely add hint
     function add_inline_hint_inside(element, hint_number) {
-    if (!/\S+/.test(element.text())) 
+    if (!/\S{3,}/.test(element.text())) 
     	return false;
     
 	var current = element;
@@ -353,6 +356,11 @@ var AddHint = null;
 	    if (inside.length == 0)
 		return false;
 	    var last_inside = inside.last();
+
+	    // if last text node is whitespace, ignore it (it's junk)
+	    if (inside.length > 1 && last_inside[0].nodeType == Node.TEXT_NODE && !/\S+/.test(last_inside[0].textContent)) {
+	    	last_inside = $(inside[inside.length - 2]);
+	    }
 
 	    if (last_inside[0].nodeType == Node.ELEMENT_NODE
 		&& last_inside.is("div, span, i, b, strong, em, code, font, abbr")) {
@@ -385,8 +393,12 @@ var AddHint = null;
 
     // this is often unsafe; prefer add_inline_hint_inside
     function add_inline_hint_outside(element, hint_number) {
-	element.hint_tag = build_hint(element, hint_number, false);
-	insert_element(element, element.hint_tag, false, false);
+    if (element.is("input[type=checkbox], input[type=radio]")) {
+        element.hint_tag = build_hint(element, hint_number, false);
+        insert_element(element, element.hint_tag, false, false);
+    	return true;
+    }
+    return false;
     }
 
 
@@ -414,12 +426,10 @@ var AddHint = null;
 	}
 
 	if (Hints.option("h")) {
-	    if (!add_inline_hint_inside(element, hint_number)) {
-		// if (element.is("input[type=checkbox], input[type=radio]")) {
-		//     add_inline_hint_outside(element, hint_number);
-		//     return null;
-		// }
-		return add_overlay_hint(element, hint_number);
+	    if (websites.force_overlay(element) || !add_inline_hint_inside(element, hint_number)) {
+			if (!add_inline_hint_outside(element, hint_number)) {
+				return add_overlay_hint(element, hint_number);
+			}
 	    }
 	    return null;
 	}

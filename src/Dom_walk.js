@@ -19,12 +19,13 @@ var DomWalk = null;
 	if (exclusion && element.is(exclusion))
 	    return;
 
-	if (pre_callback)
-	    pre_callback(element);
+	var walk_children = !(pre_callback && pre_callback(element));
 
-	element.children().each(function(index) {
-	    each_displaying_helper($(this), pre_callback, post_callback, exclusion);
-	});
+	if (walk_children) {
+		element.children().each(function(index) {
+			each_displaying_helper($(this), pre_callback, post_callback, exclusion);
+		});
+	}
 
 	// // <<<>>>
 	// if (element.is("iframe")) {

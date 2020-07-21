@@ -88,6 +88,8 @@ var Activate = null;
 	    return true;
 	} else if (element.is("a")) {
 	    return true;
+	} else if (element.is("select")) {
+	    return true;
 	} else if (element.is(":input")) {
 	    if (element.attr("type") == "submit")
 		return true;
@@ -105,6 +107,7 @@ var Activate = null;
 	switch (role) {
 	case "button":
 	case "link":
+	case "option":
 	    return true;
 	    break;
 	}
@@ -155,10 +158,11 @@ var Activate = null;
 	    // Clicking:
 	case "c":
 	    // quora.com needs the mouseover event for clicking 'comments':
-	    dispatch_mouse_events(element, ['mouseover', 'mousedown']);
+	    dispatch_mouse_events(element, ['mouseover', 'mouseenter', 'mousedown']);
 	    element[0].focus();
 	    // we are not simulating leaving the mouse hovering over the element here <<<>>>
 	    dispatch_mouse_events(element, ['mouseup', 'click', 'mouseout']);
+	    Hints.refresh_hints();
 	    break;
 
 	    // Following or copying explicit links:
@@ -296,11 +300,12 @@ var Activate = null;
     function activate(element, operation) {
 	if (operation=="c" && element.is("div, span")) {
 	    var parent = element;
-	    var max_area = 0;
+	    var max_area = area(element);
 	    parent.children().each(function(index) {
 		if (//!disabled_or_hidden($(this)) &&  // <<<>>>
 		    area($(this))>max_area) {
 		    max_area = area($(this));
+			console.log("area: " + max_area);
 		    element = $(this);
 		}
 	    });

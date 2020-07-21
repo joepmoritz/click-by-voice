@@ -26,8 +26,30 @@ var FindHint = null;
 	if (Hints.option("N"))
 	    return false;
 
+    if (websites.do_not_hint_element(element)) return false;
+
+    if (window.location.hostname.includes('github.com')) {
+    	if (element.hasClass('js-line-number') || element.hasClass('blob-num')) {
+    		return false;
+    	}
+    }
+
+    if (element.hasClass('MathJax')) return false;
+
+    // Elements that have the word button or checkbox in their class are hintable
+    // This makes waaay too many elements hintable
+    // var class_name = element.attr('class');
+    // if (class_name) {
+	   //  if (class_name.includes('button') ||
+	   //  	class_name.includes('checkbox'))
+	   //  	return true;
+    // }
+
 	// don't hint invisible elements (their children may be another matter)
-	if (css(element, "visibility") == "hidden" && !Hints.option("+")) 
+	if ((css(element, "visibility") == "hidden" ||
+		element.height() < 3 ||
+		element.width() < 3 ||
+		element.css("opacity") == 0) && !Hints.option("+")) 
 	    return false;
 
 
@@ -47,9 +69,14 @@ var FindHint = null;
 	//
 	//   Quora has placeholder links with click handlers so allow a's
 	//   w/o hrefs...
+	//   JM: that should be handled by .is("[onclick]") below
 	//
-	if (element.is("a, button, select, textarea, keygen, iframe"))
+	if (element.is("button, select, textarea, keygen, iframe"))
 	    return true;
+
+	if (element.is("a[href]") && element.attr("href").length > 1)
+		return true;
+
 
 	if (element.is("input")) {
 	    var input_type = element.attr("type");
@@ -137,11 +164,21 @@ var FindHint = null;
 		root_elements,
 	    // pre-order traversal:
 	    function (element) {
-		if (hintable(element))
-		    callback(element);
+	    	if (websites.do_not_hint_element(element)) return true;
+
+	    	// Return true to stop walking down children if this is a small element
+			return hintable(element) && callback(element) && element.height() < 50 && element.width() < 50;
 
 		// post-order traversal:
 	    }, function (element) {
+	    if (websites.do_not_hint_element(element)) return;
+	    
+	    if (window.location.href.includes('github.com')) {
+	    	if (element.hasClass('js-line-number') || element.hasClass('blob-num')) {
+	    		return;
+	    	}
+	    }
+
 		if (Hints.option('$') && !Hints.option("C"))
 		    return;
 		if (element.attr("CBV_hint_number"))
@@ -151,13 +188,13 @@ var FindHint = null;
 		    return;  // XML webpages return here
 		if (element.css("visibility") == "hidden") 
 		    return;  // visibility blocks cursor: pointer
-		if (element.parent().css("cursor")=="pointer")
+		if (element.parents().css("cursor")=="pointer")
 		    return;
 
 		if (!clickable_space(element))
 		    return;
 
-		if (element.parent().attr("CBV_hint_number"))
+		if (element.parents().attr("CBV_hint_number"))
 		    return;
 
 		if (element.has("[CBV_hint_number]").length != 0)
@@ -172,7 +209,7 @@ var FindHint = null;
 		else
 		    callback(element);
 	    },
-	    Hints.option_value('!') // exclusion
+	    '.search-map,#gmap' + Hints.option_value('!') // exclusion
 	);
     }
 

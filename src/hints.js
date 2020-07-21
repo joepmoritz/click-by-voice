@@ -8,8 +8,8 @@ var Hints = null;
 (function() {
 
     var hints_enabled = true;
-    var hint_first_letters = ['L', 'B', 'M', 'R', 'T', 'S', 'G', 'Y', 'F', 'J', 'SL', 'FL', 'BL', 'GL', 'BR', 'ST', 'TR', 'KR'];
-    var MAX_HINT_NUMBERS = 18 * 26;
+    var hint_first_letters = ['L', 'P', 'M', 'R', 'T', 'S', 'G', 'Y', 'F', 'J', 'SL', 'FL', 'GL', 'BR', 'ST', 'TR', 'CR'];
+    var MAX_HINT_NUMBERS = hint_first_letters.length * 26;
     var hint_number_to_text_map = 0;
     var text_to_hint_number_map = 0;
 
@@ -91,7 +91,7 @@ var Hints = null;
     }
     
     function map_hint_number_to_text(hint_number) {
-		if (Hints.option("A"))
+		if (Hints.option("a"))
 		{
 			if (!hint_number_to_text_map) build_hint_number_maps()
 			return hint_number_to_text_map[hint_number]
@@ -101,7 +101,7 @@ var Hints = null;
     }
 
     function map_text_to_hint_number(text) {
-		if (Hints.option("A"))
+		if (Hints.option("a"))
 		{
 			if (!text_to_hint_number_map) build_hint_number_maps()
 			return text_to_hint_number_map[text.toUpperCase()]
@@ -206,9 +206,14 @@ var Hints = null;
     var delayed_work = [];
 
     function add_hint(element, callback) {
-    	if (element.is("[CBV_hint_number]")) return;
-    	if (available_hint_numbers.size == 0) return;
-    	if (!element.visible(true)) return;
+    	if (element.is('.msg-form__contenteditable')) {
+    		console.log('add_hint');
+    		console.log(element[0]);
+    	}
+
+    	if (element.is("[CBV_hint_number]")) return true;
+    	if (available_hint_numbers.size == 0) return false;
+    	if (!element.visible(true)) return false;
     	hint_number = pop_available_hint_number();
     	// console.log(hint_number);
     	element.attr("CBV_hint_number", hint_number);
@@ -218,6 +223,8 @@ var Hints = null;
     	delayed_work.push(delayed);
 
     	available_hint_numbers.delete(hint_number);
+
+    	return true;
     }
 
     function place_hints() {
@@ -231,16 +238,9 @@ var Hints = null;
 
 		delayed_work = [];
 
-		if (GoogleInbox.is_applicable())
-		{
-			root_elements = GoogleInbox.get_root_elements();
-			GoogleInbox.place_hints();
-		}
-		else
-		{
-			root_elements = $("html").children().filter(":not(head)");
-		}
-		
+		root_elements = websites.get_root_elements() || $("html").children().filter(":not(head)");
+
+		websites.place_hints();
 
 		FindHint.each_hintable(root_elements, (e) => add_hint(e, AddHint.add_hint));
 
